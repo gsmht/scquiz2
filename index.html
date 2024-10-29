@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OX Quiz</title>
+    <style>
+        /* 전체 레이아웃 설정 */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        /* 퀴즈 컨테이너 */
+        #quiz-container {
+            text-align: center;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        /* 질문 아이콘 및 텍스트 스타일 */
+        #question-icon {
+            font-size: 60px;
+            color: #333333;
+            margin-bottom: 10px;
+        }
+        #question {
+            font-size: 28px;
+            color: #555555;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        /* OX 버튼 스타일 */
+        .answer-button {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            margin: 0 15px;
+            border-radius: 10px;
+            font-size: 40px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            line-height: 80px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .answer-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .answer-button:active {
+            transform: scale(1);
+            box-shadow: none;
+        }
+
+        /* O 버튼 스타일 */
+        #button-o {
+            background-color: #ff9f1a;
+        }
+
+        /* X 버튼 스타일 */
+        #button-x {
+            background-color: #ff4d4d;
+        }
+
+        /* 결과 텍스트 스타일 */
+        #result {
+            font-size: 22px;
+            color: #333333;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <div id="question-icon">Q</div>
+        <p id="question">문제가 여기에 표시됩니다.</p>
+        <div>
+            <div id="button-o" class="answer-button">O</div>
+            <div id="button-x" class="answer-button">X</div>
+        </div>
+        <p id="result"></p>
+    </div>
+
+    <script type="module">
+        import { questions } from './questions.js';
+
+        let selectedQuestions = [];
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+
+        // 랜덤으로 10개의 문제 선택
+        function selectRandomQuestions() {
+            const questionsCopy = [...questions];
+            while (selectedQuestions.length < 10 && questionsCopy.length > 0) {
+                const randomIndex = Math.floor(Math.random() * questionsCopy.length);
+                selectedQuestions.push(questionsCopy.splice(randomIndex, 1)[0]);
+            }
+        }
+
+        // 문제 표시
+        function displayQuestion() {
+            if (currentQuestionIndex < selectedQuestions.length) {
+                document.getElementById('question').innerText = selectedQuestions[currentQuestionIndex].question;
+                document.getElementById('result').innerText = "";  // 이전 결과 초기화
+            } else {
+                document.getElementById('question').innerText = "퀴즈가 끝났습니다!";
+                document.getElementById('result').innerText = `총 ${selectedQuestions.length}문제 중 ${correctAnswers}개를 맞췄습니다.`;
+            }
+        }
+
+        // 정답 확인
+        function checkAnswer(userAnswer) {
+            if (userAnswer === selectedQuestions[currentQuestionIndex].answer) {
+                document.getElementById('result').innerText = "정답입니다!";
+                correctAnswers++;
+            } else {
+                document.getElementById('result').innerText = "틀렸습니다!";
+            }
+            currentQuestionIndex++;
+            setTimeout(displayQuestion, 1000);  // 1초 후 다음 문제로 이동
+        }
+
+        // 이벤트 리스너 추가
+        document.getElementById('button-o').addEventListener('click', () => checkAnswer('O'));
+        document.getElementById('button-x').addEventListener('click', () => checkAnswer('X'));
+
+        // 시작 시 랜덤 문제 선택 및 첫 번째 문제 표시
+        selectRandomQuestions();
+        displayQuestion();
+    </script>
+</body>
+</html>
